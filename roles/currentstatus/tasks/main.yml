@@ -1,0 +1,17 @@
+---
+ - name: Check the State of Tomcat Service
+   shell: "svcs tomcat"
+   tags: tomcatstatus-storefront
+   register: tomcat_status
+
+ - debug:
+     msg: "Tomcat current status is {{ tomcat_status.stdout_lines.1.split().0 }}."
+
+ - name: Verifying tomcat service 
+   shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+   tags: tomcatstatus
+   ignore_errors: yes
+   changed_when: false
+   register: service_apache_status
+   
+ - debug: msg="Check if Apache is running {{ service_apache_status }}"

@@ -1,0 +1,38 @@
+- name: Executing Pre-tasks
+  hosts: "{{ target_env }}"
+  gather_facts: true
+  roles:
+    - role: currentstatus
+      tags:
+        - always
+- hosts: cdp-server
+  gather_facts: true
+  roles:  
+    - role: copyartifacts
+      tags:
+        - copyartifacts
+      become: 'yes'
+      become_user: support
+      #when: >-
+        #current_release is undefined or (current_release is defined and
+        #current_release != store_release_version)
+- hosts: localhost
+  roles:
+    - role: holdingpage
+      become_user: support
+  tasks:
+  - name: Pausing the playbook and waiting for completion of pre tasks.
+    pause:
+      seconds: 10
+- import_playbook: store-code-deployment.yml
+- import_playbook: store-cq-install.yml
+- import_playbook: store-dispatcher-clean.yml
+- import_playbook: store-liquibase.yml
+- import_playbook: store-server-start.yml
+- import_playbook: store-rollback.yml
+- name: Executing Post-tasks
+  hosts: "{{ target_env }}"
+  roles:
+    - role: currentstatus
+      tags:
+        - always

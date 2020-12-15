@@ -1,0 +1,137 @@
+#!/bin/bash
+export ANSIBLE_FORCE_COLOR='true'
+export VENV_DIR='/releases/ansible/venv'
+. ${VENV_DIR}/etc/envvars
+#echo $ANSIBLE_CALLBACK_WHITELIST
+export ANSIBLE_CONFIG='../ansible.cfg'
+
+read -p 'Please enter the Release Version to deploy : ' releaseVersion
+read -p 'Please enter the environment name : ' envName
+
+echo
+echo ****Release version**** : $releaseVersion
+echo
+echo ****Environment Name**** :  $envName
+
+if [ -z $releaseVersion ]; then
+    echo "Release version is Empty. Please provide a release version to continue.."
+    exit 0
+fi
+
+if [ -z $envName ]; then
+        echo "Environment name is empty. Please provide a environment to continue.."
+        exit 0
+elif [[ ! $envName =~ ^(prod|preprod)$ ]]; then
+        echo "Please enter a valid environment name"
+        echo "Example: preprod, prod"
+        exit 0
+fi
+
+echo ""
+echo "**************************************************************************"
+echo ""
+PS3='Select an option and press Enter: '
+#options=("Full Deployment" "Configuration deployment" "Quit")
+options=("Code Deployment" "CQ Package Install" "Dispatcher Clean" "LiquiBase" "Server Restart" "Rollback" "Quit")
+select opt in "${options[@]}"
+do
+  case $opt in
+        "Code Deployment")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;
+        "CQ Package Install")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;
+        "Dispatcher Clean")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;
+        "LiquiBase")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;
+        "Server start")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;
+       "Rollback")
+	  echo ""
+          echo "You chose $REPLY so proceeding with $opt"
+          break
+          ;;		  
+        "Quit")
+         break
+         ;;
+        *) echo ""
+           echo "Invalid option $REPLY. Please select a valid option and try again."
+           break
+           ;;
+  esac
+done
+echo "**************************************************************************"
+echo ""
+
+if [ "$envName" = "prod" ] && [ "$REPLY" = "1" ]; then
+	echo ""
+	echo "Executing the Ansible playbook for $opt on Production Environment"
+	ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" = "prod" ] && [ "$REPLY" = "2" ]; then
+	echo ""
+        echo "Executing the Ansible playbook for $opt on $envNAme Environment"
+        ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" = "prod" ] && [ "$REPLY" = "3" ]; then
+	echo ""
+	echo "Executing the Ansible playbook for $opt on Production Environment"
+	ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" = "prod" ] && [ "$REPLY" = "4" ]; then
+	echo ""
+        echo "Executing the Ansible playbook for $opt on $envNAme Environment"
+        ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" = "prod" ] && [ "$REPLY" = "5" ]; then
+	echo ""
+	echo "Executing the Ansible playbook for $opt on Production Environment"
+	ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" = "prod" ] && [ "$REPLY" = "6" ]; then
+	echo ""
+        echo "Executing the Ansible playbook for $opt on $envNAme Environment"
+        ansible-playbook ../store-main.yml --ask-vault-pass -e store_release_version=$releaseVersion -e target_env=$envName
+
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "1" ]; then
+	echo ""
+	echo "Executing the Ansible playbook for $opt on $envName Environment"
+	ansible-playbook ../store-code-deployment.yml --skip-tags "serverdown" -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="Code Deployment"
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "2" ]; then
+        echo ""
+        echo "Executing the Ansible playbook for $opt on $envName Environment"
+        ansible-playbook ../store-cq-install.yml -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="CQ Package Install"
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "3" ]; then
+        echo ""
+        echo "Executing the Ansible playbook for $opt on $envName Environment"
+        ansible-playbook ../store-dispatcher-clean.yml -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="Dispatcher Clean"
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "4" ]; then
+        echo ""
+        echo "Executing the Ansible playbook for $opt on $envName Environment"
+        ansible-playbook ../store-liquibase.yml -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="LiquiBase"
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "5" ]; then
+        echo ""
+        echo "Executing the Ansible playbook for $opt on $envName Environment"
+        ansible-playbook ../store-server-start.yml -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="Server Restart"
+elif [ "$envName" != "prod" ] && [ "$REPLY" = "6" ]; then
+        echo ""
+        echo "Executing the Ansible playbook for $opt on $envName Environment"
+        ansible-playbook ../store-rollback.yml -e myvm_release_version=$releaseVersion -e target_env=$envName -e deployment_type="Rollback"		
+fi
+
+

@@ -1,0 +1,17 @@
+---
+ - name: Ensuring that the webapps directory is created before creating symlinks..
+   file:
+     path: "{{item}}"
+     state: directory
+     with_items:
+     - "{{tomcat_webapps_path}}"
+   
+ - debug:
+    msg: "Creating New Symlinks with release version {{store_release_version}}"
+ 
+ - name: Creating new Symlinks..
+   file: src={{tomcat_server_release_path}}/Release{{store_release_version}}/{{item.0}}/webapp dest={{item.1}}/{{item.2}} state=link
+   with_nested:
+    - "{{ webapps }}"
+    - "{{tomcat_webapps_path}}"
+    - "{{tomcat_webapps_path_folder}}"

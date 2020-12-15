@@ -1,0 +1,33 @@
+---
+ - name: Check the State of tomcat service on the remote host
+   shell: "svcs tomcat"
+   register: tomcat_status
+
+ - debug:
+     msg: "Tomcat Status is {{ tomcat_status.stdout_lines.1.split().0 }}"
+
+ - name: Starting tomcat service on remote host
+   shell: "svcadm enable tomcat"
+   ignore_errors: true
+   when: "tomcat_status.stdout_lines.1.split().0  == 'disabled'"
+
+ - pause: Pausing the playbook and wait for tomcat to start up
+     seconds: 200
+
+ - name: Verifying tomcat service to make sure it is in online state
+   shell: "svcs tomcat"
+   register: result
+   until: result.stdout_lines.1.split().0 == "online"
+   retries: 5
+   delay: 30
+
+ - name: Check the State of tomcat service on the remote host
+   shell: "svcs tomcat"
+   register: tomcat_status
+
+ - set_fact:
+      tomcat_state: "{{ tomcat_status.stdout_lines.1.split().0 }}"
+
+ - debug:
+     var: tomcat_state
+

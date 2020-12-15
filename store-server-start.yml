@@ -1,0 +1,169 @@
+---
+ - name: Executing server start one by one. First, primeapi servers
+   hosts: "primeapi-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:     
+     tomcat_path: "app/esales/tomcat"
+     
+   tasks:
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+     ignore_errors: yes
+     changed_when: false
+     register: service_apache_status
+   
+   - debug: msg="Check if Apache is running {{ service_apache_status }}"
+   - debug: msg="service_apache_status.stdout != '' =  {{ service_apache_status.stdout != ''}}"
+ 
+   - name: ==> startup tomcat , path = {{ tomcat_path }}/start.sh
+     shell: sh {{ tomcat_path }}/start.sh
+ 
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100
+     
+ - name: Starting up shopping servers
+   hosts: "shopping-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:     
+     tomcat_path: "/app/esales/instances/store_api"
+   tasks:  
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+     ignore_errors: yes
+     changed_when: false
+     register: service_apache_status
+   
+   - debug: msg="Check if Apache is running {{ service_apache_status }}"
+   - debug: msg="service_apache_status.stdout != '' =  {{ service_apache_status.stdout != ''}}"
+ 
+   - name: ==> startup tomcat , path = {{ tomcat_path }}/start.sh
+     shell: sh {{ tomcat_path }}/start.sh
+      
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100
+     
+ - name: Starting up commerce servers
+   hosts: "commerce-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:     
+     tomcat_path: "/app/esales/instances/commerce_manager"
+   tasks:  
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+     ignore_errors: yes
+     changed_when: false
+     register: service_apache_status
+   
+   - debug: msg="Check if Apache is running {{ service_apache_status }}"
+   - debug: msg="service_apache_status.stdout != '' =  {{ service_apache_status.stdout != ''}}"
+ 
+   - name: ==> startup tomcat , path = {{ tomcat_path }}/start.sh
+     shell: sh {{ tomcat_path }}/start.sh
+      
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100
+     
+ - name: Starting up search servers
+   hosts: "search-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:     
+     tomcat_path: "/app/esales/instances/search"
+   tasks: 
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+     ignore_errors: yes
+     changed_when: false
+     register: service_apache_status
+   
+   - debug: msg="Check if Apache is running {{ service_apache_status }}"
+   - debug: msg="service_apache_status.stdout != '' =  {{ service_apache_status.stdout != ''}}"
+ 
+   - name: ==> startup tomcat , path = {{ tomcat_path }}/start.sh
+     shell: sh {{ tomcat_path }}/start.sh
+      
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100
+     
+ - name: Starting up storefront servers
+   hosts: "storefront-telebb-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: tomcat
+   become_method: sudo
+ 
+   tasks:  
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: "svcs tomcat"
+     tags: tomcatstatus-storefront
+     register: result
+     until: result.stdout_lines.1.split().0 == "disabled"
+     retries: 5
+     delay: 10
+
+   - debug:
+       msg: "Tomcat went to {{ tomcat_status.stdout_lines.1.split().0 }} mode. So stopping it again !!!"
+     when: "tomcat_status.stdout_lines.1.split().0  == 'maintenance'"
+
+   - shell: "svcadm disable tomcat"
+     when: (tomcat_status.stdout_lines.1.split().0) == "maintenance"
+   
+   - name: Starting tomcat Service on remote host
+     shell: "svcadm enable tomcat"
+     tags: tomcatstart-storefront
+     ignore_errors: true
+     
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100
+     
+ - name: Starting up storefront servers
+   hosts: "storefront-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: tomcat
+   become_method: sudo
+ 
+   tasks:  
+   - name: Verifying tomcat service to make sure it is in disabled state.
+     shell: "svcs tomcat"
+     tags: tomcatstatus-storefront
+     register: result
+     until: result.stdout_lines.1.split().0 == "disabled"
+     retries: 5
+     delay: 10
+
+   - debug:
+       msg: "Tomcat went to {{ tomcat_status.stdout_lines.1.split().0 }} mode. So stopping it again !!!"
+     when: "tomcat_status.stdout_lines.1.split().0  == 'maintenance'"
+
+   - shell: "svcadm disable tomcat"
+     when: (tomcat_status.stdout_lines.1.split().0) == "maintenance"
+   
+   - name: Starting tomcat Service on remote host
+     shell: "svcadm enable tomcat"
+     tags: tomcatstart-storefront
+     ignore_errors: true
+   
+   - name: Pausing the playbook and waiting for tomcat startup..
+     pause:
+       seconds: 100

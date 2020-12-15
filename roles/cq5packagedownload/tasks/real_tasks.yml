@@ -1,0 +1,19 @@
+---
+
+ - debug:
+    msg: "Downloading the CQ packages from CQ5 site to local server."
+
+ - pause:
+    seconds: 5 
+
+ - name: Ensuring that directory exists to download the MyVM artifacts locally on the Portal Admin Server
+   delegate_to: localhost
+   file:
+     path: "{{ local_server_release_path }}/{{myvm_release_version}}"
+     state: directory
+ 
+ - name: Downloading MyVM Artifacts on the local server
+   delegate_to: localhost
+   get_url: url="{{ nexus_path }}/{{item}}/{{ myvm_release_version }}/{{item}}-{{ myvm_release_version }}.war" dest={{ local_server_release_path }}/{{myvm_release_version}}
+   with_items:
+    - "{{ webapps }}"

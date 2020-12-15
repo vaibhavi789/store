@@ -1,0 +1,30 @@
+---
+ - name: Check if the release is already present in the release location
+   stat:
+     path: "{{tomcat_server_release_path}}/Release{{store_release_version}}"
+   register: storeReleaseLocation
+
+ - debug:
+     msg: "Target Release {{store_release_version}} already exist on remote host"
+   when: storeReleaseLocation.stat.isdir is defined and storeReleaseLocation.stat.isdir
+
+ - block:
+     - debug:
+         msg: "Target Release {{store_release_version}} and current release {{current_release}} are identical, Exiting the deployment."
+    
+     - pause:
+         seconds: 10
+
+     - meta: end_play
+   when: current_release is defined and store_release_version == current_release
+
+ - debug:
+     msg: "Target Release {{store_release_version}} and current release {{current_release}} are different, Proceeding with Code Deployment with release version {{store_release_version}} "
+   when: current_release is defined and store_release_version != current_release
+
+ - debug:
+     msg: "There is no release deployed. Proceeding with the Code Deployment with release version {{store_release_version}}"
+   when: current_release is undefined
+
+ - pause:
+    seconds: 10 

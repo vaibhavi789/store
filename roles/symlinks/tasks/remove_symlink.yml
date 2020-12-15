@@ -1,0 +1,13 @@
+---
+ - block:
+    - debug:
+        msg: "Removing the current Symlinks with release version {{current_release}}"
+
+    - name: Removing current Symlinks..
+      file:
+        path: "{{item.0}}/{{item.1}}"
+        state: absent
+      with_nested:
+       - "{{tomcat_webapps_path}}"
+       - "{{tomcat_webapps_path_folder}}"
+   when: current_release is defined

@@ -1,0 +1,67 @@
+---
+##################################################################################################
+########################### Ansible Playbook Variables ##############################
+##################################################################################################
+cdp-server: 172.23.164.46
+#local_server_release_path: /dev/shm/temp
+cdp_server_release_path: /export/home/support/web_optimisation/SR1
+portal_server_release_path: /releases/TK
+
+store_telebb_tomcat_server_release_path: /app/ep/storefront/releases
+store_telebb_webapps: ['commerce-store', 'assets']
+store_telebb_webapps_fileext: ['war', 'zip']
+store_telebb_tomcat_webapps_path: ['/app/ep/storefront/webapps', '/opt/elasticpath']
+store_telebb_tomcat_webapps_path_folder: ['ROOT', 'assets']
+
+store_knowesales_tomcat_server_release_path: /opt/elasticpath/releases
+store_knowesales_webapps: ['commerce-store', 'existing-customer', 'assets']
+store_knowesales_webapps_fileext: ['war', 'war', 'zip']
+store_knowesales_tomcat_webapps_path: ['', '']
+store_knowesales_tomcat_webapps_path_folder: ['ROOT', 'ROOT',  'assets']
+
+
+search_tomcat_server_release_path: /app/esales/releases
+search_webapps: ['commerce-searchserver']
+search_webapps_fileext: ['war']
+search_tomcat_webapps_path: /app/esales/instances/search/webapps
+search_tomcat_webapps_path_folder: ['ROOT']
+search_tomcat_path: /app/esales/instances/search
+
+commerce_tomcat_server_release_path: /app/esales/releases
+commerce_webapps: ['commerce-cmserver', 'assets']
+commerce_webapps_fileext: ['war', 'zip']
+commerce_tomcat_webapps_path: ['/app/esales/instances/commerce-cmserver/webapps', '/app/esales']
+commerce_tomcat_webapps_path_folder: ['ROOT', 'assets']
+commerce_tomcat_path: /app/esales/instances/commerce_manager
+
+storeapi_tomcat_server_release_path: /app/esales/releases
+storeapi_webapps: ['commerce-store-api']
+storeapi_webapps_fileext: ['war']
+storeapi_tomcat_webapps_path: /app/esales/instances/store_api/webapps
+storeapi_tomcat_webapps_path_folder: ['api']
+storeapi_tomcat_path: /app/esales/instances/store_api
+
+primeapi_tomcat_server_release_path: /app/esales/tomcat/releases
+primeapi_webapps: ['commerce-store-api']
+primeapi_webapps_fileext: ['war']
+primeapi_tomcat_webapps_path: /app/esales/tomcat/webapps
+primeapi_tomcat_webapps_path_folder: ['api']
+primeapi_tomcat_path: /app/esales/tomcat
+
+cqdispatcher_clean_path: /opt/dispatcher/htdocs
+cqdispatcher_content_copy_path: bin/virgobrowse/xsus/offers.json/content/eSales/en_gb
+cqdispatcher_tmp_json_path: /tmp/json_bkp/json_30_09_2019/xsus.json
+
+telecq_clean_path: /app/cq/dispatcher/htdocs
+
+liquibase_clean_path: <userID_path>/liquibase
+liquibase_java_path: /opt/elasticpath/vmtools/java/bin
+#liquibase_jar_path: <userID_path>/liquibase
+#liquibase_classpath: 
+
+
+
+
+
+#tomcat_start.sh and tomcat_stop.sh variables
+tomcat_service_name: tomcat

@@ -1,0 +1,225 @@
+---       
+
+ - name: Executing deployment steps to storefront app
+   hosts: "storefront-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: tomcat
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{store_knowesales_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{store_knowesales_tomcat_webapps_path}}"
+     webapps: "{{store_knowesales_webapps}}"
+     webapps_fileext: "{{store_knowesales_webapps_fileext}}"
+     webapps_path_folder: "{{store_knowesales_tomcat_webapps_path_folder}}"
+     #tomcat_webapps_path_folder: {{store_tomcat_webapps_path_folder}}
+   roles:
+     - role: currentstatus
+       tags:
+         - tomcatstatus-storefront
+
+        
+     - role: validations
+       tags:
+         - validations
+
+       
+     - role: stoptomcat
+       tags:
+         - stoptomcat-storefront
+         
+       
+     - role: storefront-deployment
+       tags:
+        - storefront-deployment
+       when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+     - role: symlinks
+       tags:
+         - symlinks
+         
+ - name: Executing deployment steps to storefront telebb app
+   hosts: "storefront-telebb-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: tomcat
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{store_telebb_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{store_telebb_tomcat_webapps_path}}"
+     webapps: "{{store_telebb_webapps}}"
+     webapps_fileext: "{{store_telebb_webapps_fileext}}"
+     webapps_path_folder: "{{store_telebb_tomcat_webapps_path_folder}}"
+     roles:
+     - role: currentstatus
+       tags:
+        - tomcatstatus-storefront         
+        
+     - role: validations
+       tags:
+         - validations
+
+       
+     - role: stoptomcat
+       tags:
+         - stoptomcat-storefront
+       
+     - role: storefront-deployment
+       tags:
+        - storefront-deployment
+       when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+     - role: symlinks
+       tags:
+         - symlinks
+
+       
+ - name: Executing deployment steps to search app
+   hosts: "search-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: esaleadm 
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{search_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{search_tomcat_webapps_path}}"
+     webapps: "{{search_webapps}}"
+     webapps_fileext: "{{search_webapps_fileext}}"
+     tomcat_webapps_path_folder: "{{search_tomcat_webapps_path_folder}}"
+     tomcat_path: "{{search_tomcat_path}}"
+     
+   roles:   
+    - role: currentstatus
+      tags:
+        - tomcatstatus
+        
+    - role: validations
+      tags:
+        - validations
+              
+    - role: stoptomcat
+      tags:
+        - stoptomcat 
+       
+    - role: search-deployment
+      tags:
+        - search-deployment
+      when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+    - role: symlinks
+      tags:
+        - symlinks
+
+       
+ - name: Executing deployment steps to commerce app
+   hosts: "commerce-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{commerce_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{commerce_tomcat_webapps_path}}"
+     webapps: "{{commerce_webapps}}"
+     webapps_fileext: "{{commerce_webapps_fileext}}"
+     tomcat_webapps_path_folder: "{{commerce_tomcat_webapps_path_folder}}"
+     tomcat_path: "{{commerce_tomcat_path}}"     
+     
+   roles:
+    - role: currentstatus
+      tags:
+        - tomcatstatus
+        
+    - role: validations
+      tags:
+        - validations
+
+       
+    - role: stoptomcat
+      tags:
+        - stoptomcat
+       
+    - role: commerce-deployment
+      tags:
+        - commerce-deployment
+      when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+    - role: symlinks
+      tags:
+        - symlinks
+       
+ - name: Executing deployment steps to shopping app
+   hosts: "shopping-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{storeapi_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{storeapi_tomcat_webapps_path}}"
+     webapps: "{{storeapi_webapps}}"
+     webapps_fileext: "{{storeapi_webapps_fileext}}"
+     tomcat_webapps_path_folder: "{{storeapi_tomcat_webapps_path_folder}}"
+     tomcat_path: "{{storeapi_tomcat_path}}"     
+     
+   roles:
+    - role: currentstatus
+      tags:
+        - tomcatstatus         
+   
+    - role: validations
+      tags:
+        - validations
+       
+    - role: shopping-deployment
+      tags:
+        - shopping-deployment
+      when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+    - role: symlinks
+      tags:
+        - symlinks       
+       
+ - name: Executing deployment steps to primeapi app
+   hosts: "primeapi-{{ target_env }}"
+   gather_facts: True
+   any_errors_fatal: true
+   become: yes
+   become_user: esaleadm
+   become_method: sudo
+   
+   vars:
+     tomcat_server_release_path: "{{primeapi_tomcat_server_release_path}}"
+     tomcat_webapps_path: "{{primeapi_tomcat_webapps_path}}"
+     webapps: "{{primeapi_webapps}}"
+     webapps_fileext: "{{primeapi_webapps_fileext}}"
+     tomcat_webapps_path_folder: "{{primeapi_tomcat_webapps_path_folder}}"
+     tomcat_path: "{{primeapi_tomcat_path}}"    
+   
+   roles:
+    - role: currentstatus
+      tags:
+        - tomcatstatus
+ 
+    - role: validations
+      tags:
+        - validations
+       
+    - role: primeapi-deployment
+      tags:
+        - primeapi-deployment
+      when: current_release is undefined or (current_release is defined and current_release != store_release_version)
+       
+    - role: symlinks
+      tags:
+        - symlinks

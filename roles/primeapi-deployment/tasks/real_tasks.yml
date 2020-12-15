@@ -1,0 +1,42 @@
+---
+
+ - debug:
+    msg: "Copying the ZIP, WAR files from portal admin hop box to tomcat nodes"
+
+# Copy war files from Portal Server to storefront tomcat nodes
+ - name: Ensuring that the artifacts release folder is created on storefront tomcat nodes
+   file:
+     path: "{{primeapi_tomcat_server_release_path}}/Release{{store_release_version}}"
+     state: directory
+     mode: 0755
+ - name: Find zip package
+   find:
+     paths: "{{portal_server_release_path}}/Release{{store_release_version}}"
+     patterns: "*"
+   register: find_result
+     
+ - name: Copying the Store release war files from Portal Admin server to storefront tomcat nodes
+   copy: src={{portal_server_release_path}}/Release{{store_release_version}}/{{item}}-{{store_release_version}}.* dest={{primeapi_tomcat_server_release_path}}/Release{{store_release_version}}/
+   with_items:
+       - "{{ primeapi_webapps }}"
+
+
+ - name: Unarchiving storefront WAR files
+   unarchive:
+     src: ""
+     dest: ""
+     remote_src: yes
+     
+
+ - name: Unarchiving storefront WAR files
+   unarchive:
+     src: ""
+     dest: ""
+     remote_src: yes
+
+
+ - name: Unarchiving storefront WAR files
+   unarchive:
+     src: ""
+     dest: ""
+     remote_src: yes

@@ -1,0 +1,10 @@
+---
+
+ - debug:
+    msg: "Stop the CQ5 publisher"
+
+ - pause:
+    seconds: 5 
+
+ - name: Stop the CQ5 publisher
+   command: ./publish/crx-quickstart/server/stop or /home/cqadm/publish/crx-quickstart/server/stop

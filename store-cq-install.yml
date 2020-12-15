@@ -1,0 +1,14 @@
+---
+ - name: Executing Pre-tasks
+   hosts: "cqpublisher-{{ target_env }}"
+   gather_facts: True
+   become: yes
+   become_user: cqadm 
+   become_method: sudo
+   roles:
+     - role: cq5packagedownload
+       tags:
+         - cq5packagedownload
+     - role: stoppublisherslave
+       tags:
+         - stoppublisherslave

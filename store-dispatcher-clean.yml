@@ -1,0 +1,48 @@
+---
+ - name: Dispatcher clean
+   hosts: cqdispatcher
+   gather_facts: True
+   become_user: webservd
+   #connection: ssh
+   tasks:
+   - name: Ensuring that the Dispatcher clean path exists on remote server
+     find:
+       paths: "{{cqdispatcher_clean_path}}"
+       patterns: "*"
+     register: files_to_delete
+   
+   - name: cleaing up the files inside that directory
+     file:
+       path: "{{ item.path }}"
+       state: absent
+     with_items: "{{ files_to_delete.files }}"
+   #when: files_to_delete.stat.exists and files_to_delete.stat.isdir
+   
+   - name: Creating directory for copying the content
+     file:
+       path: "{{cqdispatcher_clean_path}}/{{cqdispatcher_content_copy_path}}"
+       state: directory
+       mode: '0755'
+
+   - name: copying JSON content
+     copy: src={{cqdispatcher_tmp_json_path}} dest={{cqdispatcher_clean_path}}/{{cqdispatcher_content_copy_path}}
+
+
+ - name: Telesales clean
+   hosts: telecq
+   gather_facts: True
+   become_user: apache
+   become_method: sudo
+   #connection: ssh
+   tasks:
+   - name: Ensuring that the telecq clean path exists on remote server
+     find:
+       paths: "{{telecq_clean_path}}"
+       patterns: "*"
+     register: files_to_delete_telecq
+   - name: cleaing up the files inside that directory     
+     file:
+       path: "{{ item['path'] }}"
+       state: absent
+     with_items: "{{ files_to_delete_telecq['files'] }}"
+     when: files_to_delete_telecq.stat.exists and files_to_delete_telecq.stat.isdir

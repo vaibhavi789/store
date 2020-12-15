@@ -1,0 +1,17 @@
+---
+
+ - debug:
+    msg: "Copying the ZIP, WAR files from CDP Admin server to portal admin hop box"
+
+# Copy war files
+ - name: Ensuring that the artifacts release folder is created on portal admin server
+   file:
+     path: "{{portal_server_release_path}}/Release{{store_release_version}}"
+     state: directory
+     mode: 0755
+     
+ - name: Copying the Store release war files from CDP Admin server to Portal Admin server
+   copy: src={{cdp_server_release_path}}/Release{{store_release_version}}/ dest={{portal_server_release_path}}/ remote_src=yes directory_mode=yes
+   
+ - name: Renaming commerce-assets folder to assets
+   shell: mv {{portal_server_release_path}}/Release{{store_release_version}}/commerce-assets-{{store_release_version}}.zip {{portal_server_release_path}}/Release{{store_release_version}}/assets.zip

@@ -1,0 +1,16 @@
+---
+
+ - name: Liquibase rollback
+   hosts: liquibase
+   gather_facts: True
+   become_user: tomcat 
+   become_method: sudo
+   tasks:
+ - name: Run command for liquibase rollback.
+  command:
+    cmd: {{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath="{{liquibase_clean_path}}/ojdbc6.jar" --defaultsFile="{{liquibase_clean_path}}/database/liquibase.properties" --password=sp33dup rollback {{store_release_version}}
+    creates: {{liquibase_clean_path}}
+    
+ - name: Pausing the playbook and waiting for checksum to complete..
+   pause:
+     seconds: 100

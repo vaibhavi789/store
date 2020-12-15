@@ -1,0 +1,39 @@
+---
+
+ - name: Stopping tomcat Service on remote host
+   shell: "svcadm disable tomcat"
+   tags: stoptomcat-storefront
+   ignore_errors: true
+
+# Pause the playbook here for 60 seconds to let tomcat stop and go into disabled mode
+ - name: Pausing the playbook and waiting for Tomcat to shutdown..
+   pause:
+     seconds: 100
+
+ - name: Verifying tomcat service to make sure it is in disabled state.
+   shell: "svcs tomcat"
+   tags: stoptomcat-storefront
+   register: result
+   until: result.stdout_lines.1.split().0 == "disabled"
+   retries: 5
+   delay: 10
+
+ - debug:
+     msg: "Tomcat went to {{ tomcat_status.stdout_lines.1.split().0 }} mode. So stopping it again !!!"
+   when: "tomcat_status.stdout_lines.1.split().0  == 'maintenance'"
+
+ - shell: "svcadm disable tomcat"
+   when: (tomcat_status.stdout_lines.1.split().0) == "maintenance"
+   
+   
+ - name: ==> stop tomcat , path = {{ tomcat_path }}/stop.sh
+   shell: sh {{ tomcat_path }}/stop.sh
+   tags: stoptomcat
+ - name: Verifying tomcat service to make sure it is in disabled state.
+   shell: ps aux | grep '{{ tomcat_path }}' | awk '{print $2}'
+   tags: stoptomcat
+   ignore_errors: yes
+   changed_when: false
+   register: service_apache_status
+   
+ - debug: msg="Check if Apache is running {{ service_apache_status }}"

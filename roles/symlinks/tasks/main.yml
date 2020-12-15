@@ -1,0 +1,3 @@
+---
+ - import_tasks: remove_symlink.yml
+ - import_tasks: create_symlink.yml

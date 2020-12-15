@@ -1,0 +1,58 @@
+---
+ - name: Liquibase update
+   hosts: liquibase
+   gather_facts: True
+   become_user: tomcat
+   become_method: sudo   
+   #connection: ssh
+   tasks:
+   - name: Ensuring that the liquibase path exists on remote server
+     find:
+       paths: "{{liquibase_clean_path}}/database"
+       patterns: "*"
+     register: files_to_delete
+   - name: cleaing up the files inside that directory
+     file:
+       path: "{{ item['path'] }}"
+       state: absent
+     with_items: "{{ files_to_delete['files'] }}"
+     when: files_to_delete.stat.exists and files_to_delete.stat.isdir
+   tasks:   
+   - name: Unarchiving commerce-core WAR files into database folder
+     unarchive:
+       src: "{{store_tomcat_server_release_path}}/Release{{store_release_version}}/commerce-store/webapp/WEB-INF/lib/commerce-core{{store_release_version}}.jar"
+       dest: "{{liquibase_clean_path}}/database"
+       remote_src: yes
+     
+   - name: Run command for liquibase checksum.
+     command:
+       cmd: "{{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath={{liquibase_clean_path}}/ojdbc6.jar --defaultsFile={{liquibase_clean_path}}/database/liquibase.properties --password=sp33dup clearCheckSums"
+    
+   - name: Pausing the playbook and waiting for checksum to complete..
+     pause:
+       seconds: 100
+     
+   - name: Run command for liquibase status.
+     command:
+       cmd: "{{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath={{liquibase_clean_path}}/ojdbc6.jar --defaultsFile={{liquibase_clean_path}}/database/liquibase.properties --password=sp33dup status --verbose"
+    
+     
+   - name: Run command for liquibase tag.
+     command:
+       cmd: "{{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath={{liquibase_clean_path}}/ojdbc6.jar --defaultsFile={{liquibase_clean_path}}/database/liquibase.properties --password=sp33dup tag {{store_release_version}}"
+    
+   - name: Pausing the playbook and waiting for tag to complete..
+     pause:
+       seconds: 100     
+
+   - name: Run command for liquibase update.
+     command:
+       cmd: "{{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath={{liquibase_clean_path}}/ojdbc6.jar --defaultsFile={{liquibase_clean_path}}/database/liquibase.properties --password=sp33dup update"
+    
+   - name: Pausing the playbook and waiting for update to complete..
+     pause:
+       seconds: 100
+     
+   - name: Run command for liquibase status.
+     command:
+       cmd: "{{liquibase_java_path}}/java -jar {{liquibase_clean_path}}/liquibase.jar --classpath={{liquibase_clean_path}}/ojdbc6.jar --defaultsFile={{liquibase_clean_path}}/database/liquibase.properties --password=sp33dup status --verbose"

@@ -1,0 +1,29 @@
+---
+
+ - debug:
+    msg: "Starting tomcat service on {{ target_env }}" 
+
+ - name: Check the State of tomcat service on the remote host
+   shell: "svcs tomcat"
+   register: tomcat_status
+
+ #- set_fact:
+  #    tomcat_state: "{{ tomcat_status.stdout_lines.1.split().0 }}"
+
+ #- debug:
+  #   var: tomcat_state
+
+# - name: Check the State of tomcat service on the remote host
+ #  shell: "svcs tomcat"
+  # until: tomcat_state == "online"
+   #delay: 10
+
+ #- name: Pause play until a URL is reachable from this host
+  # uri:
+   #  url: "https://mytest.virginmedia.com/home/index"
+    # follow_redirects: none
+    # method: GET
+   #register: _result
+   #until: _result.status == 200
+   #retries: 10  # 720 * 5 seconds = 1hour (60*60/5)
+   #delay: 5 # Every 5 seconds

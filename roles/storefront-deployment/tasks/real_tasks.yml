@@ -1,0 +1,55 @@
+---
+
+ - debug:
+    msg: "Copying the ZIP, WAR files from portal admin hop box to tomcat nodes"
+
+# Copy war files from Portal Server to storefront tomcat nodes
+ - name: Ensuring that the artifacts release folder is created on storefront tomcat nodes
+   file:
+     path: "{{tomcat_server_release_path}}/Release{{store_release_version}}"
+     state: directory
+     mode: 0755
+# - name: Find zip package
+#   find: "{{portal_server_release_path}}/Release{{store_release_version}}" patterns="*"
+ #  register: find_result
+     
+ - name: Copying the Store release war files from Portal Admin server to storefront tomcat nodes
+   copy: src={{portal_server_release_path}}/Release{{store_release_version}}/{{item.0}}-{{store_release_version}}.{{item.1}} dest={{tomcat_server_release_path}}/Release{{store_release_version}}/
+   with_nested:
+     - "{{webapps}}"
+     - "{{webapps_fileext}}"
+     #- ['commerce-store', 'existing-customer', 'assets']
+     #- ['war', 'war', 'zip']
+
+
+ - debug:
+    msg: "Unarchiving the WAR files into webapps"
+
+ - name: Unarchiving storefront WAR files
+   unarchive:
+     src: "{{tomcat_server_release_path}}/Release{{store_release_version}}/{{item.0}}-{{store_release_version}}.{{item.1}}"
+     dest: "{{store_tomcat_webapps_path}}/{{item.2}}"
+     remote_src: yes
+     with_nested:
+       - "{{webapps}}"
+       - "{{webapps_fileext}}"
+       - "{{webapps_path_folder}}"
+       
+     
+# # - debug:
+    # msg: "Unarchiving the WAR files into webapps"
+
+# - name: Unarchiving storefront WAR files
+ #  unarchive:
+ #    src: "{{store_tomcat_server_release_path}}/Release{{store_release_version}}/existing-customer-{{store_release_version}}.war"
+  #   dest: "{{store_tomcat_webapps_path}}/ROOT"
+   #  remote_src: yes
+     
+ # - debug:
+    # msg: "Unarchiving the WAR files into webapps"
+
+ # - name: Unarchiving storefront WAR files
+   # unarchive:
+     # src: "{{store_tomcat_server_release_path}}/Release{{store_release_version}}/assets.war"
+     # dest: "{{store_tomcat_webapps_path}}/ROOT"
+     # remote_src: yes
